@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OnlineShop App</title>
+  <style>
+    body { margin:0; font-family: Arial; background:#f5f5f5; }
+    nav {
+      background:white; padding:15px; display:flex;
+      justify-content:space-between; box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+    nav a { margin-left:15px; text-decoration:none; color:black; font-weight:600; }
+    .logo { font-size:22px; }
+
+    .hero { padding:60px; text-align:center;
+      background:linear-gradient(45deg,#4f46e5,#9333ea); color:white; }
+
+    .btn { background:#4f46e5; padding:10px 18px; color:white;
+      border-radius:5px; text-decoration:none; display:inline-block; margin-top:15px; }
+
+    .container { max-width:900px; margin:20px auto; background:white;
+      padding:20px; border-radius:5px; display:none; }
+
+    .products { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+    .product-card, .product-detail-box {
+      padding:20px; border:1px solid #ddd; border-radius:5px;
+    }
+
+    .img { height:120px; background:#ddd; border-radius:5px;
+      text-align:center; line-height:120px; }
+
+    .big-img { height:200px; line-height:200px; }
+
+    .cart-row { padding:10px; border-bottom:1px solid #ddd; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="logo" onclick="showPage('home')">OnlineShop</a>
+  <div>
+    <a onclick="showPage('products')">Products</a>
+    <a onclick="showPage('cart')">Cart</a>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<header id="home" class="hero">
+  <h1>Welcome to OnlineShop</h1>
+  <p>Best online shopping experience.</p>
+  <a class="btn" onclick="showPage('products')">Shop Now</a>
+</header>
+
+<!-- PRODUCTS PAGE -->
+<div id="products" class="container">
+  <h2>Products</h2>
+
+  <div class="products">
+    <div class="product-card">
+      <div class="img">Image</div>
+      <h3>Wireless Headphones</h3>
+      <p>$79.99</p>
+      <button onclick="openProduct(1)" class="btn">View</button>
+    </div>
+
+    <div class="product-card">
+      <div class="img">Image</div>
+      <h3>Smartphone X200</h3>
+      <p>$499.00</p>
+      <button onclick="openProduct(2)" class="btn">View</button>
+    </div>
+
+    <div class="product-card">
+      <div class="img">Image</div>
+      <h3>Running Shoes</h3>
+      <p>$59.99</p>
+      <button onclick="openProduct(3)" class="btn">View</button>
+    </div>
+
+    <div class="product-card">
+      <div class="img">Image</div>
+      <h3>Coffee Maker</h3>
+      <p>$99.99</p>
+      <button onclick="openProduct(4)" class="btn">View</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAILS PAGE -->
+<div id="productDetail" class="container"></div>
+
+<!-- CART PAGE -->
+<div id="cart" class="container">
+  <h2>Your Cart</h2>
+  <div id="cart-items"></div>
+  <h3 id="total"></h3>
+  <button class="btn" onclick="checkout()">Checkout</button>
+</div>
+
+<script>
+/* ========== SAMPLE PRODUCT DATA ========== */
+const products = {
+  1: { title: "Wireless Headphones", price: 79.99, desc: "Comfortable wireless headphones." },
+  2: { title: "Smartphone X200", price: 499, desc: "6.5-inch AMOLED display, 128GB storage." },
+  3: { title: "Running Shoes", price: 59.99, desc: "Lightweight shoes for running." },
+  4: { title: "Coffee Maker", price: 99.99, desc: "Automatic drip coffee machine." }
+};
+
+/* ========== PAGE SWITCHING ========== */
+function showPage(page) {
+  document.getElementById("home").style.display = "none";
+  document.getElementById("products").style.display = "none";
+  document.getElementById("productDetail").style.display = "none";
+  document.getElementById("cart").style.display = "none";
+
+  document.getElementById(page).style.display = "block";
+
+  if (page === "cart") loadCart();
+}
+
+/* ========== PRODUCT DETAILS ========== */
+function openProduct(id) {
+  const p = products[id];
+
+  document.getElementById("productDetail").innerHTML = `
+    <div class='product-detail-box'>
+      <h2>${p.title}</h2>
+      <div class='img big-img'>Large Image</div>
+      <p>${p.desc}</p>
+      <h3>Price: $${p.price}</h3>
+      <button class='btn' onclick='addToCart(${id})'>Add to Cart</button>
+      <button class='btn' onclick='showPage(\"products\")'>Back</button>
+    </div>
+  `;
+
+  showPage("productDetail");
+}
+
+/* ========== CART SYSTEM ========== */
+function addToCart(id) {
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  cart.push(id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("Item added to cart!");
+}
+
+function loadCart() {
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  let html = "";
+  let total = 0;
+
+  cart.forEach(id => {
+    const p = products[id];
+    html += `<div class='cart-row'>${p.title} - $${p.price}</div>`;
+    total += p.price;
+  });
+
+  document.getElementById("cart-items").innerHTML = html;
+  document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+}
+
+function checkout() {
+  alert("Checkout successful!");
+  localStorage.removeItem("cart");
+  loadCart();
+}
+
+/* Default Page */
+showPage("home");
+</script>
+
+</body>
+</html>
